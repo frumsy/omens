@@ -30,9 +30,15 @@ export default class MainScene extends Phaser.Scene {
     canSend: true,
     history: []
   }
+  //for drawing names
+  names: Objects = {
+
+  }
 
   //my players stuff:
   killTimer: Date
+  nickname: string
+  role: string
 
   socket: Socket
   room: string
@@ -49,12 +55,14 @@ export default class MainScene extends Phaser.Scene {
     super({ key: 'MainScene' })
   }
 
-  init(props: { scene: string; level: number; socket: Socket; room: string }) {
-    const { scene, level = 0, socket, room} = props
+  init(props: { scene: string; level: number; socket: Socket; room: string, nickname: string}) {
+    const { scene, level = 0, socket, room, nickname} = props
     this.level = level
     this.socket = socket
     this.room = room
-    this.socket.emit('joinRoom', { scene, level, room })
+    this.nickname = nickname
+    this.socket.emit('joinRoom', { scene, level, room, nickname })
+    
   }
 
   create() {
@@ -218,6 +226,7 @@ export default class MainScene extends Phaser.Scene {
               if (obj.direction !== null) setMummyAnimation(sprite, obj.direction)
             }
             if (obj.skin === SKINS.DUDE) {
+              this.drawName(obj)
               if (obj.animation !== null) setDudeAnimation(sprite, obj.animation)
             }
           }
@@ -226,4 +235,17 @@ export default class MainScene extends Phaser.Scene {
     }
     this.sync.objects = []
   }
+
+  drawName(obj: any){
+    if(this.names[obj.id] === undefined){
+      let nameStyle = { font: "20px Arial", fill: "#ff0044", align: "center"}
+      let text = this.add.text(obj.x, obj.y, this.nickname, nameStyle);
+      this.names[obj.id] = text
+    }
+    else{
+      this.names[obj.id].x = obj.x
+      this.names[obj.id].y = obj.y
+    }
+  }
+  
 }

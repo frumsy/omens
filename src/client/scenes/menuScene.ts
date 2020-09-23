@@ -6,6 +6,8 @@ export default class MenuScene extends Phaser.Scene {
     super({ key: 'MenuScene' })
   }
 
+  nickname: string
+
   init(props: { socket: Socket }) {
     const { socket } = props
     this.socket = socket
@@ -19,6 +21,7 @@ export default class MenuScene extends Phaser.Scene {
     }
 
     let texts: any[] = []
+    this.nickname = "test name"
 
     texts.push(this.add.text(0, 0, 'Choose which Level\nyou want to play', styles).setOrigin(0.5, 0))
     //TODO: take this and files related to matter scene out all together 
@@ -38,7 +41,7 @@ export default class MenuScene extends Phaser.Scene {
         .setOrigin(0.5, 0)
         .setInteractive()
         .on('pointerdown', () => {
-          this.scene.start('MainScene', { scene: 'ArcadeScene', level: 0, socket: this.socket, room: '1' })
+          this.scene.start('MainScene', { scene: 'ArcadeScene', level: 0, socket: this.socket, room: '1', nickname: this.nickname })
         })
     )
 
@@ -48,7 +51,7 @@ export default class MenuScene extends Phaser.Scene {
         .setOrigin(0.5, 0)
         .setInteractive()
         .on('pointerdown', () => {
-          this.scene.start('MainScene', { scene: 'ArcadeScene', level: 0, socket: this.socket,room: '2' })
+          this.scene.start('MainScene', { scene: 'ArcadeScene', level: 0, socket: this.socket,room: '2', nickname: this.nickname })
         })
     )
     texts.push(
@@ -57,7 +60,7 @@ export default class MenuScene extends Phaser.Scene {
         .setOrigin(0.5, 0)
         .setInteractive()
         .on('pointerdown', () => {
-          this.scene.start('MainScene', { scene: 'ArcadeScene', level: 0, socket: this.socket, room: '3'})
+          this.scene.start('MainScene', { scene: 'ArcadeScene', level: 0, socket: this.socket, room: '3', nickname: this.nickname})
         })
     )
     /*

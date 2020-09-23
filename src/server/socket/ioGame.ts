@@ -9,9 +9,9 @@ export default class IoGame {
     ioNspGame.on('connection', async (socket: Socket) => {
       roomManager.generateClientId(socket)
 
-      socket.on('joinRoom', async (data: { scene: string; level: number, room: string }) => {
-        const { scene, level, room } = data
-        await roomManager.joinRoom(socket, scene, +level, room)
+      socket.on('joinRoom', async (data: { scene: string; level: number, room: string, nickname: string}) => {
+        const { scene, level, room, nickname} = data
+        await roomManager.joinRoom(socket, scene, +level, room, nickname)
         ioStats.log(`New user <b>${socket.id}</b> connected! to room ${socket.room}`)
       })
 
@@ -20,7 +20,7 @@ export default class IoGame {
       })
 
       socket.on('changeRoom', (data: { scene: string; level: number }) => {
-        roomManager.changeRoom(socket, data.scene, +data.level)
+        roomManager.changeRoom(socket, data.scene, +data.level, "WHY DO I HAVE A CHANGE ROOMS FUNCTION TODO CHANGE LATER")
       })
 
       socket.on('sendPing', (id: string) => {

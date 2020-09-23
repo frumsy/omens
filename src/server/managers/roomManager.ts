@@ -6,6 +6,9 @@ interface User {
   lastUpdate: number
   clientId: number
   roomId: string
+  //game info:
+  role: string
+  nickname: ''
 }
 interface Users {
   [userId: string]: User
@@ -27,7 +30,7 @@ interface Rooms {
   [room: string]: Room
 }
 import Game, { PhaserGame } from '../game/game'
-import { Math as phaserMath } from 'phaser'
+import { Math as phaserMath, NONE } from 'phaser'
 import { MAX_PLAYERS_PER_ROOM, USER_KICK_TIMEOUT } from '../../constants'
 
 let randomDataGenerator = new phaserMath.RandomDataGenerator()
@@ -52,7 +55,7 @@ export default class RoomManager {
   }
 
   // the 2 functions below should be better
-  async joinRoom(socket: Socket, scene: string, level: number, room: string) {
+  async joinRoom(socket: Socket, scene: string, level: number, room: string, nickname: string) {
     if (typeof scene !== 'string' || typeof level !== 'number') {
       console.error('level or scene is not defined in ioGame.ts')
       return
@@ -81,19 +84,22 @@ export default class RoomManager {
     this.rooms[socket.room].scene.events.emit('removeDude', socket.clientId)
   }
 
-  async changeRoom(socket: Socket, scene: string, level: number) {
+  async changeRoom(socket: Socket, scene: string, level: number, nickname: string) {
     this.leaveRoom(socket)
-    await this.joinRoom(socket, scene, +level,'TODO:CHANGE_THIS_TEMP')
+    await this.joinRoom(socket, scene, +level,'TODO:CHANGE_THIS_TEMP', nickname)
     socket.emit('changingRoom', { scene: scene, level: +level })
   }
-
+  // let style = { font: "20px Arial", fill: "#ff0044", wordWrapWidth: sprite.width, align: "center"}
+  // let text = this.add.text(obj.x, obj.y, this.nickname, style);
   addUser(socket: Socket) {
     let newUsers: Users = {
       [socket.id]: {
         roomId: socket.room,
         lastUpdate: Date.now(),
         clientId: socket.clientId,
-        id: socket.id
+        id: socket.id,
+        nickname: '',
+        role: ''
       }
     }
 

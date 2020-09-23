@@ -10,6 +10,7 @@ import RoomManager from '../../managers/roomManager'
 import { SKINS } from '../../../constants'
 import { NONE, Tilemaps } from 'phaser'
 import { Socket } from 'socket.io-client'
+import { nextTick } from 'process'
 
 export default class MainScene extends Phaser.Scene {
   id = 0
@@ -178,7 +179,7 @@ export default class MainScene extends Phaser.Scene {
       let nextLevel = this.level + 1 >= this.map.countTotalLevels() ? 0 : this.level + 1
       let socket = this.roomManager.ioNspGame.sockets[dude.socketId] as any
 
-      this.roomManager.changeRoom(socket, 'ArcadeScene', nextLevel)
+      this.roomManager.changeRoom(socket, 'ArcadeScene', nextLevel,"tenp name TODO CHANGE LATER")
     })
   }
 
