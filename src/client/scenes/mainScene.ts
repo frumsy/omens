@@ -8,6 +8,7 @@ import Resize from '../components/resize'
 
 import SyncManager from '../../server/managers/syncManager'
 import { SKINS } from '../../constants'
+import { NONE, Tilemaps } from 'phaser'
 
 interface Objects {
   [key: string]: any
@@ -29,8 +30,16 @@ export default class MainScene extends Phaser.Scene {
     canSend: true,
     history: []
   }
+
+  //my players stuff:
+  killTimer: Date
+
   socket: Socket
   room: string
+
+  map: Tilemaps.Tilemap
+  botLayer: Tilemaps.StaticTilemapLayer
+  topLayer: Tilemaps.StaticTilemapLayer
 
   cursors: Cursors | undefined
   controls: Controls | undefined
@@ -59,7 +68,16 @@ export default class MainScene extends Phaser.Scene {
       .setOrigin(0.5, 0)
       .setDepth(100)
       .setScrollFactor(0)
+    // //map stuff:
+    this.map = this.add.tilemap('level1');
+    let tileset = this.map.addTilesetImage('road_4','road_4');
 
+    this.topLayer = this.map.createStaticLayer('topLayer',[tileset], 0,0).setDepth(1);;
+    // this.botLayer = this.map.createStaticLayer('botLayer',[tileset], 0,0).setDepth(0);
+
+      //map collisions
+    this.topLayer.setCollisionByProperty({collides: true})
+      //
     let starfield = this.add.tileSprite(world.x, world.y, world.width, world.height, 'starfield').setOrigin(0)
     this.cursors = new Cursors(this, socket)
     this.controls = new Controls(this, socket)

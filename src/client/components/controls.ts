@@ -3,6 +3,7 @@ export default class Controls {
   right = false
   up = false
   down = false
+  kill = false//this is for attempting to kill
   controls: Control[] = []
   none = true
   prevNone = true
@@ -74,16 +75,17 @@ export default class Controls {
     })
   }
 
-  update() {
+  update() {    
+    //for movement:
     this.none = this.left || this.right || this.up || this.down ? false : true
-
+    
     if (!this.none || this.none !== this.prevNone) {
       let total = 0
       if (this.left) total += 1
       if (this.right) total += 2
       if (this.down) total += 3
       if (this.up) total += 6
-      if (this.none) total += 9
+      if (this.none) total += 100
       this.socket.emit('U' /* short for updateDude */, total)
     }
 

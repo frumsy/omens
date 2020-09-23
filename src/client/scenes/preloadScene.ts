@@ -9,6 +9,11 @@ export default class PreloadScene extends Phaser.Scene {
 
   preload() {
     this.load.setBaseURL('static/client')
+    // //map stuff:
+    this.load.image('road_4', 'assets/road_4.png');
+    this.load.tilemapTiledJSON('level1', 'assets/maps/tileMap.json');
+    
+    
     this.load.image(SKINS.BOX.toString(), 'assets/box.png')
     this.load.image(SKINS.STAR.toString(), 'assets/star.png')
     this.load.image('bug', 'assets/bug.png')

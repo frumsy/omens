@@ -7,7 +7,7 @@ const config: Phaser.Types.Core.GameConfig = {
   height: 720,
   banner: false,
   // @ts-ignore
-  audio: false
+  audio: false,
 }
 export default config
 

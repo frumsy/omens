@@ -3,28 +3,28 @@ export default class Map {
   tileSize = 95
   levels = [
     [
-      '    XXX  M    M      XXXXXX',
-      '        XX       X X       ',
-      ' XX  X X   XXXXX     X     ',
-      '   M    M         M X    G ',
-      'XX    XXXX       XXX     X ',
-      'XXXX       X   X       X   '
+      '                           ',
+      '       X                   ',
+      '         X X  X            ',
+      '                           ',
+      '         X X X X         XX',
+      '                        XMG'
     ],
     [
       '                           ',
-      '        M        X X       ',
+      '                 X X       ',
       ' XX  X XXXXX XXX     X     ',
-      ' G      M           X      ',
-      'XX    XXXX M     XXX     X ',
-      'XXXX XXXXXXXXX X       X   '
+      '                    X      ',
+      'XX    XXXX       XXX     XX',
+      'XXXX XXXXXXXXX X        XMG'
     ],
     [
-      '           M       G       ',
+      '                           ',
       '        XXXXXXX  X X       ',
       ' XX  X XXXXX XXX     X     ',
-      '        M           X      ',
-      'XX    XXXX       XXX     X ',
-      'XXXX XXXXXXXXX X       X   '
+      '                    X      ',
+      'XX    XXXX       XXX     XX',
+      'XXXX XXXXXXXXX X        XMG'
     ]
   ]
 

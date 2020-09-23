@@ -1,3 +1,6 @@
+import { NONE } from "phaser"
+import Game from "../../server/game/game"
+
 export default class Cursors {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys
 
@@ -8,6 +11,8 @@ export default class Cursors {
   right = false
   up = false
   down = false
+  use = false
+  killTimer = Date.now()
 
   constructor(public scene: Phaser.Scene, public socket: SocketIOClient.Socket) {
     this.cursors = scene.input.keyboard.createCursorKeys()
@@ -20,8 +25,23 @@ export default class Cursors {
   }
 
   update() {
-    if (!this.cursors.left || !this.cursors.right || !this.cursors.up || !this.cursors.down) return
+    if (!this.cursors.left || !this.cursors.right || !this.cursors.up || !this.cursors.down || !this.cursors.space || !this.cursors.shift) return
 
+    //for attacking and use stuff:
+    if (this.cursors.space.isDown) {
+      this.use = true
+      console.log("useing  something")
+    }
+    if (this.cursors.shift.isDown) {
+      if(Math.round( (Date.now() - this.killTimer)/1000 ) >5){
+        this.killTimer = Date.now()
+        console.log("kill")
+        this.socket.emit('attemptKill', {attacker: '1', victim: '2'})
+      }
+    }
+
+    
+    //for movement:
     this.none = this.cursors.left.isDown || this.cursors.right.isDown || this.cursors.up.isDown || this.cursors.down.isDown ? false : true
 
     if (!this.none || this.none !== this.prevNone) {

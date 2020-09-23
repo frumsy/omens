@@ -27,6 +27,13 @@ export default class IoGame {
         socket.emit('getPong', id)
       })
 
+      socket.on('attemptKill'/* short for attempt to kill */, (data: any)=>{
+        console.log("Kill attempt")
+        console.log(data.attacker)
+        console.log(data.victim)
+      })
+
+      //update (U) is used for movement
       socket.on('U' /* short for updateDude */, (updates: any) => {
         if (roomManager.isRemoving(socket.room)) return
         if (!roomManager.userExists(socket.room, socket.id)) return

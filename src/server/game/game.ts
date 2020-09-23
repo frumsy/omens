@@ -1,6 +1,7 @@
 import '@geckos.io/phaser-on-nodejs'
 import commonConfig, { arcadePhysics, matterPhysics } from './config'
 
+import PreloadScene from './scenes/preloadScene'
 import ArcadeScene from './scenes/arcadeScene'
 import MatterScene from './scenes/matterScene'
 import RoomManager from '../managers/roomManager'

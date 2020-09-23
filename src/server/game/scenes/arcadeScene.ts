@@ -8,6 +8,8 @@ import Map from '../arcadeObjects/map'
 import SyncManager from '../../managers/syncManager'
 import RoomManager from '../../managers/roomManager'
 import { SKINS } from '../../../constants'
+import { NONE, Tilemaps } from 'phaser'
+import { Socket } from 'socket.io-client'
 
 export default class MainScene extends Phaser.Scene {
   id = 0
@@ -18,6 +20,11 @@ export default class MainScene extends Phaser.Scene {
   debug: any = {}
   level = 0
   map: Map
+
+  tileMap: Tilemaps.Tilemap
+  botLayer: Tilemaps.StaticTilemapLayer
+  topLayer: Tilemaps.StaticTilemapLayer
+
   objectsToSync: any = {}
   tick = 0
   roomManager: RoomManager
@@ -48,6 +55,14 @@ export default class MainScene extends Phaser.Scene {
     }
   }
 
+  preload(){
+    console.log("preload acrade")
+
+    //this.load.image('road_4', '../../../../dist/client/assets/road_4.png')
+    //this.load.tilemapTiledJSON('level1', '../../../../dist/client/assets/maps/tileMap.json')
+
+  }
+
   create() {
     // this will stop the scene
     this.events.addListener('stopScene', () => {
@@ -62,6 +77,17 @@ export default class MainScene extends Phaser.Scene {
     this.mummyGroup = this.add.group()
     this.map = new Map(this, world, this.level)
     const level = this.map.getLevel()
+
+    //tile map stuff
+    //this.tileMap = this.add.tilemap('level1')
+    //let tileset = this.tileMap.addTilesetImage('road_4','road_4')
+
+    //this.topLayer = this.tileMap.createStaticLayer('topLayer',[tileset], 0,0).setDepth(1)
+    // this.botLayer = this.map.createStaticLayer('botLayer',[tileset], 0,0).setDepth(0);
+
+      //map collisions
+    //this.topLayer.setCollisionByProperty({collides: true})
+
 
     // generate the level
     level.forEach((row, y) => {
@@ -117,7 +143,7 @@ export default class MainScene extends Phaser.Scene {
           right: b === 2 || b === 5 || b === 8 ? true : false,
           down: b === 3 || b === 4 || b === 5 ? true : false,
           up: b === 6 || b === 7 || b === 8 ? true : false,
-          none: b === 9 ? true : false
+          none: b === 100 ? true : false
         }
         dudes[0].setUpdates(updates)
       }
@@ -159,7 +185,7 @@ export default class MainScene extends Phaser.Scene {
   /** Sends the initial state to the client */
   getInitialState() {
     let objects: any[] = []
-
+   
     SyncManager.prepareFromPhaserGroup(this.boxGroup, objects)
     SyncManager.prepareFromPhaserGroup(this.dudeGroup, objects)
     SyncManager.prepareFromPhaserSprite(this.star, objects)
