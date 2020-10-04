@@ -33,11 +33,7 @@ export default class Cursors {
       console.log("useing  something")
     }
     if (this.cursors.shift.isDown) {
-      if(Math.round( (Date.now() - this.killTimer)/1000 ) >5){
-        this.killTimer = Date.now()
-        console.log("kill")
-        this.socket.emit('attemptKill', {attacker: '1', victim: '2'})
-      }
+      this.scene.game.events.emit('attemptKill',{data:'a'})
     }
 
     

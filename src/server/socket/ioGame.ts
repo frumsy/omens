@@ -28,9 +28,10 @@ export default class IoGame {
       })
 
       socket.on('attemptKill'/* short for attempt to kill */, (data: any)=>{
-        console.log("Kill attempt")
-        console.log(data.attacker)
-        console.log(data.victim)
+        if (roomManager.isRemoving(socket.room)) return
+        if (!roomManager.userExists(socket.room, socket.id)) return
+
+        roomManager.rooms[socket.room].scene.events.emit('Kill' /* short for updateDude */, {attacker: socket.clientId})
       })
 
       //update (U) is used for movement

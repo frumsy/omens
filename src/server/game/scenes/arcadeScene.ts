@@ -132,6 +132,28 @@ export default class MainScene extends Phaser.Scene {
       }
     })
 
+    this.events.addListener('Kill', (res: any) => {
+        let dudes = this.dudeGroup.children.getArray()
+        // @ts-ignore
+        let attackers: Dude[] = this.dudeGroup.children.getArray().filter((dude: Dude) => {
+          return dude.clientId && dude.clientId === res.attacker
+        })
+        let attackerPos = attackers[0].body.position
+        // @ts-ignore
+        let possible: Dude[] = this.dudeGroup.children.getArray().filter((dude: Dude) => {
+          return dude.clientId && dude.clientId != res.attacker
+        })
+        //let diff = Phaser.Math.Distance.BetweenPoints(, ) 
+        // @ts-ignore
+         let victims: Dudes = possible.sort((a, b) => {
+          let d1 = Phaser.Math.Distance.BetweenPoints(attackerPos, a.body.position)
+          let d2 = Phaser.Math.Distance.BetweenPoints(attackerPos, b.body.position)
+          return d1-d2;
+          });
+          let victim = victims[0]
+          this.killPlayer(attackers[0], victim)
+    })
+
     this.events.addListener('U' /* short for updateDude */, (res: any) => {
       // @ts-ignore
       let dudes: Dude[] = this.dudeGroup.children.getArray().filter((dude: Dude) => {
@@ -192,6 +214,14 @@ export default class MainScene extends Phaser.Scene {
     SyncManager.prepareFromPhaserSprite(this.star, objects)
 
     return SyncManager.encode(objects)
+  }
+  
+  killPlayer(attacker: Dude, victim: Dude){
+    if(victim){
+      attacker.setPosition(victim.body.position.x, victim.body.position.y)
+      victim.dead = true
+      this.roomManager.killConfirmed(attacker.clientId, victim.clientId)
+    }
   }
 
   update() {
@@ -265,7 +295,7 @@ export default class MainScene extends Phaser.Scene {
     // @ts-ignore
     this.dudeGroup.children.iterate((child: Dude) => {
       child.update()
-      // we only update the dude if one if the 4 properties below have changed
+      // we only update the dude if one of the 4 properties below have changed
       let x = child.prevPosition.x.toFixed(0) !== child.body.position.x.toFixed(0)
       let y = child.prevPosition.y.toFixed(0) !== child.body.position.y.toFixed(0)
       let dead = child.prevDead !== child.dead

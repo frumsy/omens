@@ -37,6 +37,8 @@ let randomDataGenerator = new phaserMath.RandomDataGenerator()
 
 import { v4 as uuidv4 } from 'uuid'
 import Stats from '../socket/ioStats'
+import { use } from 'matter'
+import { Socket } from 'socket.io-client'
 
 export default class RoomManager {
   rooms: Rooms = {}
@@ -72,6 +74,7 @@ export default class RoomManager {
 
     this.addUser(socket)
     this.rooms[socket.room].scene.events.emit('createDude', socket.clientId, socket.id)
+    this.ioNspGame.to(socket.room).emit('playerJoin', {pid: socket.clientId})
   }
 
   leaveRoom(socket: Socket) {
@@ -252,6 +255,7 @@ export default class RoomManager {
   removeInactiveUsers() {
     this.getAllUsersArray().forEach((user: User) => {
       if (Date.now() - user.lastUpdate > USER_KICK_TIMEOUT) {
+        //TODO: emit to the player that he is being kicked for debug help
         let removed = this.removeUser(user.roomId, user.id, false)
         let disconnected = this.disconnectUser(user.id)
         if (removed && disconnected) {
@@ -259,5 +263,11 @@ export default class RoomManager {
         }
       }
     })
+  }
+
+  //stuff for gameplay interaction (may want to extract this to it's own file/class later)
+  killConfirmed(attacker: number, victim:number){
+    //TODO: make this work confirm the kill
+    //Socket.emit('killConfirm', {attacker: attacker, victim: victim})//no reference to socket here.....
   }
 }

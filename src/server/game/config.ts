@@ -14,15 +14,5 @@ export default config
 export const arcadePhysics = {
   default: 'arcade',
   arcade: {
-    //gravity: { y: 1500 }
-  }
-}
-
-export const matterPhysics = {
-  default: 'matter',
-  matter: {
-    gravity: {
-      y: 2
-    }
   }
 }

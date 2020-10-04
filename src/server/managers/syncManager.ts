@@ -1,5 +1,3 @@
-import MatterGameObject from '../game/matterObjects/matterGameObject'
-
 /** Helps preparing the object to sync with the client */
 export default class SyncManager {
   constructor() {}
@@ -16,12 +14,6 @@ export default class SyncManager {
       ...this.getXY(sprite)
     }
     objects.push(SyncManager.cleanObjectToSync(obj))
-  }
-
-  static prepareFromMatterGameObject(gameObjects: MatterGameObject[], objects: any) {
-    gameObjects.forEach(obj => {
-      objects.push(SyncManager.cleanObjectToSync(obj))
-    })
   }
 
   static getXY(child: any) {

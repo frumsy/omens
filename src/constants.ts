@@ -6,4 +6,4 @@ export const SKINS = {
 }
 
 export const MAX_PLAYERS_PER_ROOM = 10
-export const USER_KICK_TIMEOUT = 60_000 // 1 minute
+export const USER_KICK_TIMEOUT = 600_000 // 10 minute

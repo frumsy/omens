@@ -9,9 +9,15 @@ import Resize from '../components/resize'
 import SyncManager from '../../server/managers/syncManager'
 import { SKINS } from '../../constants'
 import { NONE, Tilemaps } from 'phaser'
+import Dude from '../../server/game/arcadeObjects/dude'
+import Player from '../components/player'
 
 interface Objects {
   [key: string]: any
+}
+
+interface players {
+  [pid: string]: Player
 }
 
 export default class MainScene extends Phaser.Scene {
@@ -30,13 +36,19 @@ export default class MainScene extends Phaser.Scene {
     canSend: true,
     history: []
   }
+
   //for drawing names
   names: Objects = {
 
   }
 
+  players: Objects = {
+
+  }
+
   //my players stuff:
-  killTimer: Date
+  killCooldown = 1
+  killTimer = Date.now()
   nickname: string
   role: string
 
@@ -115,6 +127,18 @@ export default class MainScene extends Phaser.Scene {
       }
     })
 
+    socket.on('killConfirm', (data: {attacker: number, victim: number})=>{
+      console.log("kill confiremed")
+      console.log("attacker:", data.attacker)
+      console.log("victim:", data.victim)
+    })
+
+    socket.on('playerJoin', (player: {pid: number})=>{
+      this.players[player.pid.toString()] = new Player(player.pid)
+      console.log('new player:', player.pid)
+      console.log('my id:', this.socket.clientId)
+    })
+
     socket.on('changingRoom', (data: { scene: string; level: number }) => {
       console.log('You are changing room')
       // destroy all objects and get new onces
@@ -189,10 +213,12 @@ export default class MainScene extends Phaser.Scene {
     // request the initial state if the game gets focus
     // e.g. if the users comes from another tab or window
     this.game.events.on('focus', () => socket.emit('getInitialState'))
+    this.game.events.on('attemptKill', this.attemptKill, this)
 
     // this helps debugging
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      console.log(pointer.worldX, pointer.worldY)
+      // console.log(pointer.worldX, pointer.worldY)
+      console.log(this.players)
     })
 
     const resize = () => {
@@ -223,10 +249,11 @@ export default class MainScene extends Phaser.Scene {
           if (obj.angle !== null && typeof obj.angle !== 'undefined') sprite.angle = obj.angle
           if (obj.skin !== null) {
             if (obj.skin === SKINS.MUMMY) {
-              if (obj.direction !== null) setMummyAnimation(sprite, obj.direction)
+              if (obj.didrawNamerection !== null) setMummyAnimation(sprite, obj.direction)
             }
             if (obj.skin === SKINS.DUDE) {
               this.drawName(obj)
+              //this.players[obj.id] = obj
               if (obj.animation !== null) setDudeAnimation(sprite, obj.animation)
             }
           }
@@ -235,7 +262,37 @@ export default class MainScene extends Phaser.Scene {
     }
     this.sync.objects = []
   }
+  getClosePlayers(player: Dude){
+       // @ts-ignore
+       let possible: Dude[] = Object.values(this.players).filter((dude: Dude) => {
+        //TODO: change this to get a threshold of only players in some distance
+        //let dist =Phaser.Math.Distance.Between(player.x, player.y, dude.x, dude.y)
+        return true //dist < 50
+       })
+       // @ts-ignore
+       let dudes: Dude[] = possible.sort((a, b) => {
+        console.log("1",a)
+        console.log("2",b)
+        console.log("3",player)
+        let d1 = Phaser.Math.Distance.Between(player.x, player.y, a.x, a.y)
+        let d2 = Phaser.Math.Distance.Between(player.x, player.y, b.x, b.y)
+        return d1-d2;
+        });
+        return dudes
+  }
 
+  attemptKill(data: any){
+    console.log("id:", this.players)
+    if(Math.round( (Date.now() - this.killTimer)/1000 ) > this.killCooldown){
+      let me = this.players[this.socket.clientId]
+      let victims = this.getClosePlayers(me)
+      if(victims.length > 0){
+        this.killTimer = Date.now()
+        console.log("kill")  
+        this.socket.emit('attemptKill', {attacker: this.socket.clientId, victim: victims[0].clientId})
+      }
+    }
+  }
   drawName(obj: any){
     if(this.names[obj.id] === undefined){
       let nameStyle = { font: "20px Arial", fill: "#ff0044", align: "center"}

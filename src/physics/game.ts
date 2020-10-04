@@ -1,7 +1,6 @@
-import commonConfig, { arcadePhysics, matterPhysics } from '../server/game/config'
+import commonConfig, { arcadePhysics } from '../server/game/config'
 
 import ArcadeScene from '../server/game/scenes/arcadeScene'
-import MatterScene from '../server/game/scenes/matterScene'
 
 class PhaserGame extends Phaser.Game {
   debug = true
@@ -26,11 +25,6 @@ const Game = (io: SocketIO.Namespace) => {
     config.physics = arcadePhysics
     // @ts-ignore
     config.physics.arcade.debug = true
-  }
-  if (/matter/.test(href)) {
-    config.scene = [MatterScene]
-    config.physics = matterPhysics
-    if (config.physics.matter) config.physics.matter.debug = true
   }
 
   return new PhaserGame(io, config)
