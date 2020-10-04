@@ -31,6 +31,9 @@ export default class MainScene extends Phaser.Scene {
   roomManager: RoomManager
   roomId: string
 
+  myMap: Tilemaps.Tilemap
+  ready: boolean = false
+
   constructor() {
     // @ts-ignore
     super({ key: 'MainScene', plugins: PHYSICS_DEBUG ? null : ['Clock'], active: false, cameras: null })
@@ -39,12 +42,17 @@ export default class MainScene extends Phaser.Scene {
     // https://github.com/photonstorm/phaser/blob/master/src/plugins/DefaultPlugins.js#L76
   }
 
+  isReady(){
+    return this.ready
+  }
+
   /** Create a new object id */
   newId() {
     return this.id++
   }
 
   init() {
+    //console.log("init arcade")
     try {
       //@ts-ignore
       const { level = 0, roomId, roomManager } = this.game.config.preBoot()
@@ -65,6 +73,8 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
+    console.log("create acrade")
+
     // this will stop the scene
     this.events.addListener('stopScene', () => {
       this.roomManager.stats.removeTotalObjects(this.roomId)
@@ -130,6 +140,7 @@ export default class MainScene extends Phaser.Scene {
         dude = new Dude(this, this.newId(), { clientId, socketId })
         this.dudeGroup.add(dude)
       }
+      this.physics.add.collider(dude, this.topLayer)
     })
 
     this.events.addListener('Kill', (res: any) => {
@@ -203,15 +214,35 @@ export default class MainScene extends Phaser.Scene {
 
       this.roomManager.changeRoom(socket, 'ArcadeScene', nextLevel,"tenp name TODO CHANGE LATER")
     })
+
+    //setup tilemap
+    // //map stuff:
+    this.myMap = this.add.tilemap('level1');
+    let tileset = this.myMap.addTilesetImage('road_4','road_4');
+
+    //may need these
+    this.topLayer = this.myMap.createStaticLayer('topLayer',[tileset], 0,0).setDepth(1);;
+    // this.botLayer = this.map.createStaticLayer('botLayer',[tileset], 0,0).setDepth(0);
+
+
+    //map collisions
+    this.topLayer.setCollisionByProperty({collides: true})
+
+    //set ready
+    this.ready = true
   }
 
   /** Sends the initial state to the client */
   getInitialState() {
+
+    //TODO SOMEHOW WAIT HERE FOR ARCADE TO FINISH LOADING
     let objects: any[] = []
-   
-    SyncManager.prepareFromPhaserGroup(this.boxGroup, objects)
-    SyncManager.prepareFromPhaserGroup(this.dudeGroup, objects)
-    SyncManager.prepareFromPhaserSprite(this.star, objects)
+
+    if(this.isReady()){
+      SyncManager.prepareFromPhaserGroup(this.boxGroup, objects)
+      SyncManager.prepareFromPhaserGroup(this.dudeGroup, objects)
+      SyncManager.prepareFromPhaserSprite(this.star, objects)  
+    }
 
     return SyncManager.encode(objects)
   }

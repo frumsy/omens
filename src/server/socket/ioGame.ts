@@ -49,6 +49,7 @@ export default class IoGame {
       socket.on('getInitialState', () => {
         if (roomManager.isRemoving(socket.room)) return
         if (!roomManager.roomExists(socket.room)) return
+        //if (!socket.room) return
 
         let payload = {
           time: this.time,

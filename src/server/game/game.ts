@@ -15,8 +15,8 @@ const Game = (roomManager: RoomManager, roomId: string, options: { scene: string
   let config = { ...commonConfig }
 
   if (options.scene === 'ArcadeScene') {
-    // config.scene= [PreloadScene, ArcadeScene]
-    config.scene = [ArcadeScene]
+    config.scene= [PreloadScene, ArcadeScene]//PreloadScene, 
+    //config.scene = [ArcadeScene]
     config.physics = arcadePhysics
   }
 
